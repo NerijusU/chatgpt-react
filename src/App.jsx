@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { Configuration, OpenAIApi } from "openai";
-import.meta.env.VITE_ORGANIZATION;
-import.meta.env.VITE_API_KEY;
+import { useTranslation } from "react-i18next";
+import { Button } from "react-bootstrap";
+
+const lngs = {
+  en: { nativeName: "English" },
+  de: { nativeName: "Deutsch" },
+  lt: { nativeName: "Lietuvių" },
+  ru: { nativeName: "Русский" },
+};
 
 const configuration = new Configuration({
   organization: import.meta.env.VITE_ORGANIZATION,
@@ -14,6 +21,7 @@ function App() {
   const [message, setMessage] = useState("");
   const [chats, setChats] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
+  const { t, i18n } = useTranslation();
 
   const chat = async (e, message) => {
     e.preventDefault();
@@ -48,7 +56,23 @@ function App() {
 
   return (
     <main>
-      <h1>Chat AI from Nerijus</h1>
+      <header>
+        <div>
+          {Object.keys(lngs).map((lng) => (
+            <Button
+              key={lng}
+              style={{
+                fontWeight: i18n.resolvedLanguage === lng ? "bold" : "normal",
+              }}
+              type="submit"
+              onClick={() => i18n.changeLanguage(lng)}
+            >
+              {lngs[lng].nativeName}
+            </Button>
+          ))}
+        </div>
+      </header>
+      <h1>{t("welcome")}</h1>
       <section>
         {chats && chats.length
           ? chats.map((chat, index) => (
@@ -72,7 +96,7 @@ function App() {
           type="text"
           name="message"
           value={message}
-          placeholder="Type a message here and hit Enter..."
+          placeholder={t("instruction")}
           onChange={(e) => setMessage(e.target.value)}
         />
       </form>
